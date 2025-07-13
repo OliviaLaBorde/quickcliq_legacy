@@ -1,0 +1,98 @@
+HBITMAP CMenuXP::CreateGradientBMP(HDC hDC,COLORREF cl1,COLORREF cl2,int nWidth,int nHeight,int nDir,int nNumColors)
+515  {
+516      if(nNumColors > 256)
+517          nNumColors = 256;
+518  
+519      COLORREF        PalVal[256];
+520      memset(PalVal, 0, sizeof(COLORREF)*256);
+521  
+522      int nIndex;
+523      BYTE peRed=0,peGreen=0,peBlue=0;
+524  
+525      int r1=GetRValue(cl1);
+526      int r2=GetRValue(cl2);
+527      int g1=GetGValue(cl1);
+528      int g2=GetGValue(cl2);
+529      int b1=GetBValue(cl1);
+530      int b2=GetBValue(cl2);
+531  
+532      for (nIndex = 0; nIndex < nNumColors; nIndex++)
+533      {
+534          peRed = (BYTE) (r1 + MulDiv((r2-r1),nIndex,nNumColors-1));
+535          peGreen = (BYTE) (g1 + MulDiv((g2-g1),nIndex,nNumColors-1));
+536          peBlue = (BYTE) (b1 + MulDiv((b2-b1),nIndex,nNumColors-1));
+537  
+538          PalVal[nIndex]=(peRed << 16) | (peGreen << 8) | (peBlue);
+539      }
+540  
+541      int x,y,w,h;
+542      w=nWidth;
+543      h=nHeight;
+544      
+545      LPDWORD         pGradBits;
+546      BITMAPINFO      GradBitInfo;
+547  
+548      pGradBits=(DWORD*) malloc(w*h*sizeof(DWORD));
+549      memset(&GradBitInfo,0,sizeof(BITMAPINFO));
+550  
+551      GradBitInfo.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+552      GradBitInfo.bmiHeader.biWidth=w;
+553      GradBitInfo.bmiHeader.biHeight=h;
+554      GradBitInfo.bmiHeader.biPlanes=1;
+555      GradBitInfo.bmiHeader.biBitCount=32;
+556      GradBitInfo.bmiHeader.biCompression=BI_RGB;
+557      
+558      if(nDir==0) 
+559      {
+560          for(y=0;y<h;y++) 
+561          {
+562              for(x=0;x<w;x++) 
+563              {
+564                  *(pGradBits+(y*w)+x)=PalVal[MulDiv(nNumColors,y,h)];
+565              }
+566          }
+567      }
+568      else if(nDir==1) 
+569      {
+570          for(y=0;y<h;y++)
+571          {
+572              int l,r;
+573              l=MulDiv((nNumColors/2),y,h);
+574              r=l+(nNumColors/2)-1;
+575              for(x=0;x<w;x++)
+576              {
+577                  *(pGradBits+(y*w)+x)=PalVal[l+MulDiv((r-l),x,w)];
+578              }
+579          }
+580      }
+581      else if(nDir==2)
+582      {
+583          for(x=0;x<w;x++)
+584          {
+585              for(y=0;y<h;y++)
+586              {
+587                  *(pGradBits+(y*w)+x)=PalVal[MulDiv(nNumColors,x,w)];
+588              }
+589          }
+590      }
+591      else if(nDir==3)
+592      {
+593          for(y=0;y<h;y++)
+594          {
+595              int l,r;
+596              r=MulDiv((nNumColors/2),y,h);
+597              l=r+(nNumColors/2)-1;
+598              for(x=0;x<w;x++)
+599              {
+600                  *(pGradBits+(y*w)+x)=PalVal[l+MulDiv((r-l),x,w)];
+601              }
+602          }
+603      }
+604  
+605      HBITMAP hBmp = CreateDIBitmap(hDC,&GradBitInfo.bmiHeader,CBM_INIT,
+606                          pGradBits,&GradBitInfo,DIB_RGB_COLORS);
+607  
+608      free(pGradBits);
+609  
+610      return hBmp;
+611  }
