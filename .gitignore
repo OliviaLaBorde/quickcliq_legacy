@@ -1,0 +1,111 @@
+############################################
+# Visual Studio / VS Code
+############################################
+.vs/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+############################################
+# Build results
+############################################
+[Bb]in/
+[Oo]bj/
+[Dd]ebug*/
+[Rr]elease*/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+[Ll]og/
+
+# MSBuild / VS artifacts
+*.VC.db
+*.VC.VC.opendb
+*.pdb
+*.ipch
+*.aps
+*.ncb
+*.opendb
+*.sdf
+*.cachefile
+*.tlog
+*.lastbuildstate
+
+############################################
+# Test results
+############################################
+[Tt]est[Rr]esult*/
+[Tt]est[Rr]esults*/
+*.trx
+
+############################################
+# NuGet
+############################################
+# If you use packages.config (older), ignore the packages folder
+packages/
+
+# NuGet v3+ local cache files (rarely committed)
+*.nupkg
+*.snupkg
+*.nuspec
+
+# NuGet lock file (KEEP if you use it for reproducible restores)
+# packages.lock.json
+
+############################################
+# .NET tooling / artifacts
+############################################
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+############################################
+# WPF / ClickOnce / Publish outputs
+############################################
+*.publish/
+PublishProfiles/
+**/Properties/PublishProfiles/
+app.publish/
+*.pfx
+*.cer
+
+############################################
+# Windows / OS junk
+############################################
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+############################################
+# Logs / temp
+############################################
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+
+############################################
+# Rider / JetBrains (if you ever open it there)
+############################################
+.idea/
+*.sln.iml
+
+############################################
+# DotCover / coverage outputs
+############################################
+*.dotCover
+coverage*/
+*.coverage
+*.coveragexml
+
+############################################
+# Azure / CI (optional)
+############################################
+# Uncomment if you generate local secrets or dev-only files
+# **/secrets.json

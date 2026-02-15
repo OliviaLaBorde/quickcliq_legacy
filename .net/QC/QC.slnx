@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Data/">
+    <File Path="Data\qc_config.json" />
+  </Folder>
+  <Project Path="QC.net/QC.net.csproj" />
+  <Project Path="QuickCliq.Core/QuickCliq.Core.csproj" />
+</Solution>

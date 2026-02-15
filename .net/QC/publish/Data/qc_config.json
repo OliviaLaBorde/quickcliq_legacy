@@ -1,0 +1,110 @@
+{
+  "version": "3.0.0",
+  "lastId": 5,
+  "menu": {
+    "id": 0,
+    "name": "main",
+    "textColor": 0,
+    "bgColor": 15790321,
+    "items": [
+      {
+        "id": 1,
+        "name": "\uD83D\uDDD2\uFE0F Notepad",
+        "icon": "notepad.exe",
+        "hotkey": "",
+        "bold": false,
+        "isSeparator": false,
+        "autorun": false,
+        "textColor": 0,
+        "bgColor": 0,
+        "commands": [
+          "notepad.exe"
+        ],
+        "children": []
+      },
+      {
+        "id": 2,
+        "name": "\uD83E\uDDEE Calculator",
+        "icon": "calc.exe",
+        "hotkey": "",
+        "bold": false,
+        "isSeparator": false,
+        "autorun": false,
+        "textColor": 0,
+        "bgColor": 0,
+        "commands": [
+          "calc.exe"
+        ],
+        "children": []
+      },
+      {
+        "id": 3,
+        "name": "---",
+        "icon": "",
+        "hotkey": "",
+        "bold": false,
+        "isSeparator": true,
+        "autorun": false,
+        "textColor": 0,
+        "bgColor": 0,
+        "commands": [],
+        "children": []
+      },
+      {
+        "id": 4,
+        "name": "\uD83C\uDF10 Chrome (if installed)",
+        "icon": "chrome.exe",
+        "hotkey": "",
+        "bold": false,
+        "isSeparator": false,
+        "autorun": false,
+        "textColor": 0,
+        "bgColor": 0,
+        "commands": [
+          "chrome.exe"
+        ],
+        "children": []
+      },
+      {
+        "id": 5,
+        "name": "\uD83D\uDCC1 Windows Explorer",
+        "icon": "explorer.exe",
+        "hotkey": "",
+        "bold": false,
+        "isSeparator": false,
+        "autorun": false,
+        "textColor": 0,
+        "bgColor": 0,
+        "commands": [
+          "explorer.exe"
+        ],
+        "children": []
+      }
+    ]
+  },
+  "settings": {
+    "main_hotkey": "^!Z",
+    "gen_trayicon": true,
+    "aprns_iconssize": 16,
+    "aprns_lightmenu": false,
+    "aprns_iconsonly": false,
+    "aprns_heightadjust": 0,
+    "aprns_mainfont": "Segoe UI",
+    "aprns_fontqlty": 5,
+    "aprns_framewidth": 1,
+    "aprns_frameselmode": false,
+    "gen_cmddelay": 100,
+    "gen_editoritem": true,
+    "gen_suspendsub": true,
+    "gen_helpsub": true,
+    "clips_on": false,
+    "clips_sub": false,
+    "wins_on": false,
+    "wins_sub": false,
+    "memos_on": false,
+    "memos_sub": false,
+    "recent_on": false,
+    "recent_sub": false
+  },
+  "hiddenWindows": []
+}

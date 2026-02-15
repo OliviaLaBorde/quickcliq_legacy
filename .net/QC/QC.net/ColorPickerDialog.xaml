@@ -1,0 +1,205 @@
+<Window x:Class="QC.net.ColorPickerDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Pick Color" 
+        Width="550"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="280"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Preview and Hex Input -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="140"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBox Grid.Column="0" 
+                     Name="txtHex" 
+                     materialDesign:HintAssist.Hint="Hex Color Code"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     FontSize="16" 
+                     TextChanged="HexInput_Changed"
+                     MaxLength="7"
+                     Margin="0,0,12,0"/>
+            
+            <Border Grid.Column="1" 
+                    Name="colorPreview" 
+                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                    BorderThickness="2"
+                    CornerRadius="8"
+                    Height="56"/>
+        </Grid>
+        
+        <!-- Color Palette Area -->
+        <materialDesign:Card Grid.Row="1" Margin="0,0,0,20" Padding="0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="50"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- Saturation/Brightness Gradient -->
+                <Border Grid.Column="0" 
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="1"
+                        Margin="12,12,8,12">
+                    <Canvas Name="paletteCanvas" 
+                            Background="Red"
+                            MouseLeftButtonDown="Palette_MouseDown"
+                            MouseMove="Palette_MouseMove"
+                            Cursor="Cross">
+                        <Ellipse Name="paletteCursor"
+                                 Width="16" 
+                                 Height="16"
+                                 Stroke="White"
+                                 StrokeThickness="3"
+                                 Fill="Transparent"
+                                 IsHitTestVisible="False">
+                            <Ellipse.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="0" Opacity="0.5"/>
+                            </Ellipse.Effect>
+                        </Ellipse>
+                    </Canvas>
+                </Border>
+                
+                <!-- Hue Slider -->
+                <Border Grid.Column="1" 
+                        BorderBrush="{DynamicResource MaterialDesignDivider}"
+                        BorderThickness="1"
+                        Margin="0,12,12,12">
+                    <Canvas Name="hueCanvas"
+                            MouseLeftButtonDown="Hue_MouseDown"
+                            MouseMove="Hue_MouseMove"
+                            Cursor="Hand">
+                        <Rectangle Name="hueCursor"
+                                   Width="50"
+                                   Height="8"
+                                   Stroke="White"
+                                   StrokeThickness="3"
+                                   Fill="Transparent"
+                                   IsHitTestVisible="False">
+                            <Rectangle.Effect>
+                                <DropShadowEffect BlurRadius="4" ShadowDepth="0" Opacity="0.5"/>
+                            </Rectangle.Effect>
+                        </Rectangle>
+                    </Canvas>
+                </Border>
+            </Grid>
+        </materialDesign:Card>
+        
+        <!-- RGB Display -->
+        <Grid Grid.Row="2" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Text="R" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="1" Name="txtR" IsReadOnly="True" 
+                     Style="{StaticResource MaterialDesignFilledTextBox}" 
+                     Margin="0,0,12,0" TextAlignment="Center"/>
+            
+            <TextBlock Grid.Column="2" Text="G" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="3" Name="txtG" IsReadOnly="True" 
+                     Style="{StaticResource MaterialDesignFilledTextBox}" 
+                     Margin="0,0,12,0" TextAlignment="Center"/>
+            
+            <TextBlock Grid.Column="4" Text="B" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+            <TextBox Grid.Column="5" Name="txtB" IsReadOnly="True" 
+                     Style="{StaticResource MaterialDesignFilledTextBox}" 
+                     TextAlignment="Center"/>
+        </Grid>
+        
+        <!-- Common Colors -->
+        <StackPanel Grid.Row="3" Margin="0,0,0,20">
+            <TextBlock Text="COMMON COLORS" 
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Margin="0,0,0,12"/>
+            <UniformGrid Rows="2" Columns="10">
+                <!-- Row 1 -->
+                <Button Background="White" Click="CommonColor_Click" Tag="#FFFFFF" Margin="3" Height="42" 
+                        BorderBrush="#CCCCCC" BorderThickness="1" Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Black" Click="CommonColor_Click" Tag="#000000" Margin="3" Height="42" 
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Red" Click="CommonColor_Click" Tag="#FF0000" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Lime" Click="CommonColor_Click" Tag="#00FF00" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Blue" Click="CommonColor_Click" Tag="#0000FF" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Yellow" Click="CommonColor_Click" Tag="#FFFF00" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Cyan" Click="CommonColor_Click" Tag="#00FFFF" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Magenta" Click="CommonColor_Click" Tag="#FF00FF" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Orange" Click="CommonColor_Click" Tag="#FFA500" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Purple" Click="CommonColor_Click" Tag="#800080" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                
+                <!-- Row 2 -->
+                <Button Background="Silver" Click="CommonColor_Click" Tag="#C0C0C0" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Gray" Click="CommonColor_Click" Tag="#808080" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Maroon" Click="CommonColor_Click" Tag="#800000" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Olive" Click="CommonColor_Click" Tag="#808000" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Green" Click="CommonColor_Click" Tag="#008000" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Teal" Click="CommonColor_Click" Tag="#008080" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Navy" Click="CommonColor_Click" Tag="#000080" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Brown" Click="CommonColor_Click" Tag="#A52A2A" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Pink" Click="CommonColor_Click" Tag="#FFC0CB" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+                <Button Background="Gold" Click="CommonColor_Click" Tag="#FFD700" Margin="3" Height="42"
+                        Style="{StaticResource MaterialDesignFlatButton}"/>
+            </UniformGrid>
+        </StackPanel>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right"
+                    Margin="0,16,0,0">
+            <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Width="120" 
+                    Height="40"
+                    IsDefault="True" 
+                    Click="OK_Click" 
+                    Margin="0,0,12,0">
+                <TextBlock Text="OK" FontSize="14" FontWeight="SemiBold"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Width="120"
+                    Height="40"
+                    IsCancel="True" 
+                    Click="Cancel_Click">
+                <TextBlock Text="Cancel" FontSize="14"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

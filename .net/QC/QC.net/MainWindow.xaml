@@ -1,0 +1,343 @@
+<Window x:Class="QC.net.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QC.net"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
+        Title="Quick Cliq - Menu Editor" 
+        Height="800" Width="1300" 
+        MinHeight="600" MinWidth="1000"
+        WindowStartupLocation="CenterScreen"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Toolbar -->
+        <materialDesign:ColorZone Grid.Row="0" Mode="Dark" Padding="16,8">
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="0,0,8,0"
+                        Click="AddShortcut_Click" 
+                        ToolTip="Add Shortcut">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="PlusCircle" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Add Shortcut" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="0,0,8,0"
+                        Click="AddMenu_Click" 
+                        ToolTip="Add Submenu">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FolderPlus" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Add Menu" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="0,0,16,0"
+                        Click="AddSeparator_Click" 
+                        ToolTip="Add Separator">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Minus" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Separator" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignIconButton}" 
+                        Width="36" Height="36"
+                        Margin="0,0,4,0"
+                        Click="MoveUp_Click" 
+                        ToolTip="Move Up"
+                        Foreground="White">
+                    <materialDesign:PackIcon Kind="ArrowUp" Width="20" Height="20"/>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignIconButton}" 
+                        Width="36" Height="36"
+                        Margin="0,0,16,0"
+                        Click="MoveDown_Click" 
+                        ToolTip="Move Down"
+                        Foreground="White">
+                    <materialDesign:PackIcon Kind="ArrowDown" Width="20" Height="20"/>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="0,0,16,0"
+                        Click="Delete_Click" 
+                        ToolTip="Delete Item">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Delete" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Delete" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                        Margin="0,0,16,0"
+                        Click="Save_Click" 
+                        ToolTip="Save and Rebuild Menu">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ContentSave" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBlock Text="Save" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                    </StackPanel>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignIconButton}" 
+                        Width="36" Height="36"
+                        Margin="0,0,4,0"
+                        Click="ExpandAll_Click" 
+                        ToolTip="Expand All"
+                        Foreground="White">
+                    <materialDesign:PackIcon Kind="UnfoldMoreHorizontal" Width="20" Height="20"/>
+                </Button>
+                
+                <Button Style="{StaticResource MaterialDesignIconButton}" 
+                        Width="36" Height="36"
+                        Click="CollapseAll_Click" 
+                        ToolTip="Collapse All"
+                        Foreground="White">
+                    <materialDesign:PackIcon Kind="UnfoldLessHorizontal" Width="20" Height="20"/>
+                </Button>
+            </StackPanel>
+        </materialDesign:ColorZone>
+        
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="16"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+            
+            <!-- Left: Tree View -->
+            <materialDesign:Card Grid.Column="0" Padding="0">
+                <TreeView Name="menuTreeView" 
+                          SelectedItemChanged="MenuTreeView_SelectedItemChanged"
+                          AllowDrop="True"
+                          Padding="8">
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type local:MenuItemViewModel}" 
+                                                ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal" Margin="0,4">
+                                <TextBlock Text="{Binding DisplayName}" 
+                                         FontWeight="{Binding FontWeight}"
+                                         FontSize="13"/>
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </materialDesign:Card>
+            
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Center" Background="Transparent"/>
+            
+            <!-- Right: Properties Panel -->
+            <materialDesign:Card Grid.Column="2" Padding="20">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Name="propertiesPanel">
+                        <TextBlock Text="Item Properties" 
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" 
+                                   Margin="0,0,0,20"/>
+                        
+                        <!-- Name -->
+                        <TextBox Name="txtName" 
+                                 materialDesign:HintAssist.Hint="Name"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 Margin="0,0,16,16"/>
+                        
+                        <!-- Commands -->
+                        <TextBox Name="txtCommands" 
+                                 materialDesign:HintAssist.Hint="Commands (one per line)"
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 AcceptsReturn="True" 
+                                 TextWrapping="Wrap" 
+                                 MinHeight="140"
+                                 MaxHeight="100"
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 Margin="0,0,16,16"/>
+                        
+                        <!-- Icon -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox Name="txtIcon" 
+                                     Grid.Column="0"
+                                     materialDesign:HintAssist.Hint="Icon path"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"/>
+                            
+                            <Button Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Margin="16,0,16,0"
+                                    Click="BrowseIcon_Click"
+                                    ToolTip="Browse for icon">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="FolderOpen" Margin="0,0,8,0"/>
+                                    <TextBlock Text="Browse"/>
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                        
+                        <!-- Options -->
+                        <CheckBox Name="chkBold" 
+                                  Content="Bold text" 
+                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                  Margin="0,0,0,8"/>
+                        <CheckBox Name="chkIsMenu" 
+                                  Content="This is a submenu (contains other items)" 
+                                  Style="{StaticResource MaterialDesignCheckBox}"
+                                  Margin="0,0,0,20"/>
+                        
+                        <!-- Text Color -->
+                        <TextBlock Text="TEXT COLOR" 
+                                   Style="{StaticResource MaterialDesignCaptionTextBlock}" 
+                                   Margin="0,0,0,8"/>
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox Name="txtTextColor" 
+                                     Grid.Column="0"
+                                     materialDesign:HintAssist.Hint="Hex (e.g., 0xFF0000)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     TextChanged="TextColorPanel_Changed"/>
+                            
+                            <Button Name="btnTextColorPicker" 
+                                    Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Width="40" Height="40"
+                                    Margin="8,0,0,0"
+                                    Click="TextColorPicker_Click"
+                                    ToolTip="Pick Color">
+                                <materialDesign:PackIcon Kind="Palette" Width="24" Height="24"/>
+                            </Button>
+                            
+                            <Border Name="previewTextColorPanel"
+                                    Grid.Column="2"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                    BorderThickness="1"
+                                    Margin="8,8,14,8"
+                                    CornerRadius="4"/>
+                        </Grid>
+                        
+                        <!-- Background Color -->
+                        <TextBlock Text="BACKGROUND COLOR" 
+                                   Style="{StaticResource MaterialDesignCaptionTextBlock}" 
+                                   Margin="0,0,0,8"/>
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox Name="txtBgColor" 
+                                     Grid.Column="0"
+                                     materialDesign:HintAssist.Hint="Hex (e.g., 0xF0F0F0)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     TextChanged="BgColorPanel_Changed"/>
+                            
+                            <Button Name="btnBgColorPicker" 
+                                    Grid.Column="1"
+                                    Style="{StaticResource MaterialDesignIconButton}"
+                                    Width="40" Height="40"
+                                    Margin="8,0,0,0"
+                                    Click="BgColorPicker_Click"
+                                    ToolTip="Pick Color">
+                                <materialDesign:PackIcon Kind="Palette" Width="24" Height="24"/>
+                            </Button>
+                            
+                            <Border Name="previewBgColorPanel"
+                                    Grid.Column="2"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                    BorderThickness="1"
+                                    Margin="8,8,14,8"
+                                    CornerRadius="4"/>
+                        </Grid>
+                        
+                        <!-- Apply Button -->
+                        <Button Name="btnSaveItem" 
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Click="SaveItem_Click" 
+                                Height="42"
+                                Margin="0,0,20,20">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Check" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="Apply Changes" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Button>
+                        
+                        <!-- Help Text -->
+                        <materialDesign:Card Background="{DynamicResource MaterialDesignToolBarBackground}" 
+                                            Padding="16"
+                                            Margin="0,0,16,16"
+                                            UniformCornerRadius="8">
+                            <StackPanel>
+                                <TextBlock Text="💡 Tips" 
+                                          FontWeight="SemiBold" 
+                                          FontSize="13"
+                                          Margin="0,0,0,8"/>
+                                <TextBlock TextWrapping="Wrap" 
+                                         Opacity="0.7"
+                                         FontSize="12"
+                                         LineHeight="20">
+                                    <Run Text="• Use {N} in commands for multi-target execution"/>
+                                    <LineBreak/>
+                                    <Run Text="• Special prefixes: RUNAS, WAIT, REP, RUN_MIN, RUN_MAX"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+        </Grid>
+        
+        <!-- Status Bar -->
+        <materialDesign:ColorZone Grid.Row="2" Mode="Dark" Padding="16,8">
+            <TextBlock Name="statusText" 
+                       Text="Ready" 
+                       VerticalAlignment="Center"
+                       Opacity="0.8"/>
+        </materialDesign:ColorZone>
+        
+        <!-- Toast Notification Overlay -->
+        <materialDesign:Card Name="toastNotification" 
+                Grid.Row="1"
+                UniformCornerRadius="8"
+                Padding="24,12"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,20,0,0"
+                Visibility="Collapsed"
+                materialDesign:ElevationAssist.Elevation="Dp8">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Kind="CheckCircle" 
+                                        VerticalAlignment="Center" 
+                                        Margin="0,0,12,0"
+                                        Width="24" Height="24"
+                                        Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                <TextBlock Name="toastText" 
+                           VerticalAlignment="Center"
+                           FontSize="14"
+                           FontWeight="Medium"
+                           Text="Toast message"/>
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>

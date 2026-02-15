@@ -1,0 +1,196 @@
+<Window x:Class="QC.net.ItemEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Edit Menu Item - Quick Cliq" 
+        Height="550" Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="Edit Menu Item Properties" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,15"/>
+        
+        <!-- Main Content -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Name -->
+                <GroupBox Header="Name" Margin="0,0,0,10">
+                    <StackPanel Margin="10">
+                        <TextBox Name="txtName" 
+                                 FontSize="14"
+                                 Padding="5"/>
+                        <TextBlock Text="The display name shown in the menu" 
+                                   Foreground="Gray" 
+                                   FontSize="11" 
+                                   Margin="0,3,0,0"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Commands -->
+                <GroupBox Header="Commands" Margin="0,0,0,10">
+                    <StackPanel Margin="10">
+                        <TextBox Name="txtCommands" 
+                                 AcceptsReturn="True" 
+                                 TextWrapping="Wrap" 
+                                 Height="100" 
+                                 VerticalScrollBarVisibility="Auto"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 Padding="5"/>
+                        <TextBlock TextWrapping="Wrap" 
+                                   Foreground="Gray" 
+                                   FontSize="11" 
+                                   Margin="0,3,0,0">
+                            <Run Text="One command per line. Use {N} for multi-target."/>
+                            <LineBreak/>
+                            <Run Text="Prefixes: RUNAS, WAIT, REP, RUN_MIN, RUN_MAX"/>
+                        </TextBlock>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Icon -->
+                <GroupBox Header="Icon" Margin="0,0,0,10">
+                    <StackPanel Margin="10">
+                        <DockPanel Margin="0,0,0,5">
+                            <Button Name="btnBrowseIcon" 
+                                    Content="Browse..." 
+                                    Width="90" 
+                                    Click="BrowseIcon_Click" 
+                                    DockPanel.Dock="Right" 
+                                    Margin="5,0,0,0"
+                                    Padding="5"/>
+                            <Button Name="btnPickIcon" 
+                                    Content="🎨 Pick Icon..." 
+                                    Width="120" 
+                                    Click="PickIcon_Click" 
+                                    DockPanel.Dock="Right" 
+                                    Margin="5,0,0,0"
+                                    Padding="5"/>
+                            <TextBox Name="txtIcon" Padding="5"/>
+                        </DockPanel>
+                        <TextBlock Text="Path to icon file (ICO, EXE, DLL) or leave blank" 
+                                   Foreground="Gray" 
+                                   FontSize="11"/>
+                    </StackPanel>
+                </GroupBox>
+                
+                <!-- Appearance -->
+                <GroupBox Header="Appearance" Margin="0,0,0,10">
+                    <StackPanel Margin="10">
+                        <!-- Bold -->
+                        <CheckBox Name="chkBold" 
+                                  Content="Bold text" 
+                                  Margin="0,0,0,10"
+                                  FontSize="13"/>
+                        
+                        <!-- Is Submenu -->
+                        <CheckBox Name="chkIsMenu" 
+                                  Content="This is a submenu (contains other items)" 
+                                  Margin="0,0,0,10"
+                                  FontSize="13"
+                                  Checked="IsMenu_Changed"
+                                  Unchecked="IsMenu_Changed"/>
+                        
+                        <!-- Text Color -->
+                        <Label Content="Text Color:" FontWeight="Bold"/>
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox Name="txtTextColor" 
+                                     Grid.Column="0"
+                                     Padding="5"
+                                     TextChanged="TextColor_Changed"/>
+                            <Button Name="btnTextColor" 
+                                    Grid.Column="1"
+                                    Content="🎨" 
+                                    Width="40" 
+                                    Height="30"
+                                    Margin="5,0,0,0"
+                                    Click="TextColor_Click"/>
+                            <Border Name="previewTextColor"
+                                    Grid.Column="2"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    Margin="5,0,0,0"
+                                    CornerRadius="3"/>
+                        </Grid>
+                        <TextBlock Text="Hex color: 0xRRGGBB (e.g., 0xFF0000 for red) or leave blank for default" 
+                                   Foreground="Gray" 
+                                   FontSize="11"
+                                   Margin="0,0,0,10"/>
+                        
+                        <!-- Background Color -->
+                        <Label Content="Background Color:" FontWeight="Bold"/>
+                        <Grid Margin="0,0,0,5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox Name="txtBgColor" 
+                                     Grid.Column="0"
+                                     Padding="5"
+                                     TextChanged="BgColor_Changed"/>
+                            <Button Name="btnBgColor" 
+                                    Grid.Column="1"
+                                    Content="🎨" 
+                                    Width="40" 
+                                    Height="30"
+                                    Margin="5,0,0,0"
+                                    Click="BgColor_Click"/>
+                            <Border Name="previewBgColor"
+                                    Grid.Column="2"
+                                    BorderBrush="Gray"
+                                    BorderThickness="1"
+                                    Margin="5,0,0,0"
+                                    CornerRadius="3"/>
+                        </Grid>
+                        <TextBlock Text="Hex color: 0xRRGGBB (e.g., 0xF0F0F0 for light gray) or leave blank for default" 
+                                   Foreground="Gray" 
+                                   FontSize="11"/>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+        
+        <!-- Buttons -->
+        <Border Grid.Row="2" 
+                BorderBrush="#CCC" 
+                BorderThickness="0,1,0,0" 
+                Padding="0,15,0,0"
+                Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Name="btnOK" 
+                        Content="OK" 
+                        Width="100" 
+                        Height="35"
+                        IsDefault="True" 
+                        Click="OK_Click" 
+                        Margin="0,0,10,0"
+                        FontSize="14"/>
+                <Button Name="btnCancel" 
+                        Content="Cancel" 
+                        Width="100"
+                        Height="35"
+                        IsCancel="True" 
+                        Click="Cancel_Click"
+                        FontSize="14"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
