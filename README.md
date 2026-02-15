@@ -29,7 +29,6 @@
 
 ### Why Rewrite?
 
-- **10-100x faster** startup and execution
 - **Native performance** with compiled .NET vs interpreted AHK
 - **Modern UI** with WPF and Material Design
 - **Better stability** with managed code and exception handling
