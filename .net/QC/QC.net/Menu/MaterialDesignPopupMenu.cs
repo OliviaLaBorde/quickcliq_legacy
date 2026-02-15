@@ -166,6 +166,21 @@ public class MaterialDesignPopupMenu : IPopupMenu
         return false;
     }
     
+    private T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+        for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T typedChild)
+                return typedChild;
+            
+            var result = FindVisualChild<T>(child);
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
+    
     private void WireMenuEvents(ItemsControl menu, MenuResultWrapper resultWrapper)
     {
         foreach (var item in menu.Items)
@@ -330,6 +345,49 @@ public class MaterialDesignPopupMenu : IPopupMenu
             if (submenu is MaterialDesignPopupMenu wpfSubmenu)
             {
                 Console.WriteLine($"  Submenu has {wpfSubmenu._items.Count} items");
+                Console.WriteLine($"  Submenu params: TextColor={wpfSubmenu._params.TextColor:X6}, BgColor={wpfSubmenu._params.BgColor:X6}");
+                
+                // Create a style object to hold submenu colors
+                var submenuStyle = new SubmenuStyle { OriginalData = data };
+                
+                // Apply submenu's background/foreground colors to the MenuItem's submenu popup
+                // Don't apply if they're the default values (let Material Design theme apply)
+                if (wpfSubmenu._params.BgColor >= 0 && wpfSubmenu._params.BgColor != 0xf1f1f1)
+                {
+                    var bgColor = wpfSubmenu._params.BgColor;
+                    var r = (byte)((bgColor >> 16) & 0xFF);
+                    var g = (byte)((bgColor >> 8) & 0xFF);
+                    var b = (byte)(bgColor & 0xFF);
+                    submenuStyle.BgBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
+                }
+                
+                if (wpfSubmenu._params.TextColor >= 0 && wpfSubmenu._params.TextColor != 0x000000)
+                {
+                    var fgColor = wpfSubmenu._params.TextColor;
+                    var r = (byte)((fgColor >> 16) & 0xFF);
+                    var g = (byte)((fgColor >> 8) & 0xFF);
+                    var b = (byte)(fgColor & 0xFF);
+                    submenuStyle.FgBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(r, g, b));
+                }
+                
+                // Store the style object in the MenuItem's Tag
+                menuItem.Tag = submenuStyle;
+                
+                // Hook into the submenu opened event to apply colors to the popup
+                if (submenuStyle.BgBrush != null || submenuStyle.FgBrush != null)
+                {
+                    menuItem.SubmenuOpened += (s, e) =>
+                    {
+                        // Find the Popup that contains the submenu and apply background
+                        var popup = FindVisualChild<System.Windows.Controls.Primitives.Popup>(menuItem);
+                        if (popup?.Child is System.Windows.Controls.Border border && submenuStyle.BgBrush != null)
+                        {
+                            border.Background = submenuStyle.BgBrush;
+                            border.BorderBrush = submenuStyle.BgBrush; // Also set border to match background
+                        }
+                    };
+                }
+                
                 foreach (var subItemData in wpfSubmenu._items)
                 {
                     if (subItemData.IsSeparator)
@@ -340,10 +398,32 @@ public class MaterialDesignPopupMenu : IPopupMenu
                     else if (subItemData.Params != null)
                     {
                         var subMenuItem = CreateMenuItem(subItemData);
+                        
+                        // Apply submenu colors to child items if they don't have their own colors
+                        if (submenuStyle.BgBrush != null && subItemData.Params.BgColor == null)
+                        {
+                            subMenuItem.Background = submenuStyle.BgBrush;
+                        }
+                        if (submenuStyle.FgBrush != null && subItemData.Params.TColor == null)
+                        {
+                            // Need to set foreground on the TextBlock inside the header
+                            if (subMenuItem.Header is StackPanel sp && sp.Children.Count > 0)
+                            {
+                                foreach (var child in sp.Children)
+                                {
+                                    if (child is TextBlock tb)
+                                        tb.Foreground = submenuStyle.FgBrush;
+                                }
+                            }
+                        }
+                        
                         menuItem.Items.Add(subMenuItem);
                         Console.WriteLine($"    Added submenu item: {subItemData.Params.Name}");
                     }
                 }
+                
+                // Restore the original Tag (MenuItemData)
+                menuItem.Tag = submenuStyle.OriginalData;
             }
         }
         
@@ -410,6 +490,13 @@ public class MaterialDesignPopupMenu : IPopupMenu
         {
             Params = parameters;
         }
+    }
+    
+    private class SubmenuStyle
+    {
+        public SolidColorBrush? BgBrush { get; set; }
+        public SolidColorBrush? FgBrush { get; set; }
+        public MenuItemData? OriginalData { get; set; }
     }
     
     private class MenuResultWrapper

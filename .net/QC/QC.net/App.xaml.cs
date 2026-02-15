@@ -358,13 +358,10 @@ public partial class App : System.Windows.Application
             if (menuItem.Commands == null || menuItem.Commands.Count == 0)
                 return;
             
-            // Join commands with newlines (CommandExecutor will handle multi-line commands)
-            var commandString = string.Join("\n", menuItem.Commands);
-            
-            // Execute the command(s)
+            // Pass commands list directly - no more string joining/splitting!
             var execParams = new QuickCliq.Core.Execution.ExecuteParams
             {
-                Command = commandString,
+                Commands = menuItem.Commands,
                 Name = menuItem.Name
             };
             

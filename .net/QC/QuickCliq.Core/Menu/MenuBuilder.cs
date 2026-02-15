@@ -85,7 +85,34 @@ public class MenuBuilder : IMenuBuilder
 
     public IPopupMenu BuildMenu(MenuItem menuNode, MenuParams? baseParams = null)
     {
-        var menuParams = baseParams ?? CreateMenuParams(menuNode.TextColor, menuNode.BgColor);
+        // If submenu has default colors (-1), inherit from parent (baseParams)
+        // Otherwise, create new params from submenu's colors
+        MenuParams menuParams;
+        
+        Console.WriteLine($"BuildMenu for '{menuNode.Name}': TextColor={menuNode.TextColor}, BgColor={menuNode.BgColor}");
+        Console.WriteLine($"  baseParams: {(baseParams != null ? $"TextColor={baseParams.TextColor:X6}, BgColor={baseParams.BgColor:X6}" : "null")}");
+        
+        if (baseParams != null && menuNode.TextColor < 0 && menuNode.BgColor < 0)
+        {
+            // Both colors are default (-1), inherit parent's params entirely
+            Console.WriteLine($"  -> Inheriting all colors from parent");
+            menuParams = baseParams;
+        }
+        else if (baseParams != null && (menuNode.TextColor < 0 || menuNode.BgColor < 0))
+        {
+            // Partial override: some colors are default, inherit those from parent
+            var textColor = menuNode.TextColor >= 0 ? menuNode.TextColor : baseParams.TextColor;
+            var bgColor = menuNode.BgColor >= 0 ? menuNode.BgColor : baseParams.BgColor;
+            Console.WriteLine($"  -> Partial inherit: TextColor={textColor:X6}, BgColor={bgColor:X6}");
+            menuParams = CreateMenuParams(textColor, bgColor);
+        }
+        else
+        {
+            // Create new params from submenu's own colors (or defaults if no parent)
+            Console.WriteLine($"  -> Using submenu's own colors (or defaults)");
+            menuParams = CreateMenuParams(menuNode.TextColor, menuNode.BgColor);
+        }
+        
         var popupMenu = _menuFactory.CreateMenu(menuParams);
         
         foreach (var item in menuNode.Children)

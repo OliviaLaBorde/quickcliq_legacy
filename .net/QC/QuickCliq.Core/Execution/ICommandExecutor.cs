@@ -30,9 +30,15 @@ public interface ICommandExecutor
 public record ExecuteParams
 {
     /// <summary>
-    /// Command string (may contain {N} for multi-target)
+    /// Command string (may contain {N} for multi-target) - LEGACY FORMAT
+    /// Use Commands list instead for new code
     /// </summary>
-    public required string Command { get; init; }
+    public string? Command { get; init; }
+    
+    /// <summary>
+    /// List of commands to execute sequentially - PREFERRED
+    /// </summary>
+    public List<string>? Commands { get; init; }
     
     /// <summary>
     /// Display name for logging/recent

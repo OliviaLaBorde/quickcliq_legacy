@@ -49,6 +49,17 @@ public partial class MainWindow : Window
             e.Cancel = true;
             Hide();
         };
+        
+        // After window is fully loaded, select the root menu item by default
+        Loaded += (s, e) =>
+        {
+            if (_menuItems.Count > 0)
+            {
+                // Select the root menu item (Main Menu)
+                var rootItem = _menuItems[0];
+                SelectTreeViewItem(rootItem);
+            }
+        };
     }
     
     // Public method to refresh menu from config (called when reopening editor)
@@ -80,7 +91,19 @@ public partial class MainWindow : Window
             }
             
             _menuItems.Add(rootViewModel);
+            
+            // Clear selection and property panel
+            _selectedItem = null;
+            ClearPropertyPanel();
         });
+    }
+    
+    private void SelectTreeViewItem(MenuItemViewModel item)
+    {
+        // Set the item as selected
+        item.IsSelected = true;
+        
+        // The TreeView's SelectedItemChanged event will fire and call LoadItemProperties
     }
     
     #region Drag and Drop
@@ -525,8 +548,35 @@ public partial class MainWindow : Window
     
     private void LoadItemProperties(MenuItemViewModel item)
     {
+        // Determine item type
+        bool isRootMenu = item.IsRootMenu;
+        bool isSubmenu = item.Model.IsMenu && !isRootMenu;
+        bool isShortcut = !item.Model.IsMenu && !isRootMenu;
+        
+        // Show/hide controls based on item type
+        // Commands - only for shortcuts
+        pnlCommands.Visibility = isShortcut ? Visibility.Visible : Visibility.Collapsed;
+        
+        // Icon - for shortcuts and submenus, but not root menu
+        var iconGrid = (Grid)txtIcon.Parent; // Get the Grid containing icon controls
+        iconGrid.Visibility = isRootMenu ? Visibility.Collapsed : Visibility.Visible;
+        
+        // Bold - for shortcuts and submenus, but not root menu
+        chkBold.Visibility = isRootMenu ? Visibility.Collapsed : Visibility.Visible;
+        
+        // "Is submenu" checkbox - hide always (it's determined by structure, not user input)
+        chkIsMenu.Visibility = Visibility.Collapsed;
+        
+        // Load values
         txtName.Text = item.Name;
-        txtCommands.Text = string.Join(Environment.NewLine, item.Model.Commands);
+        
+        // Load commands into ListBox
+        lstCommands.Items.Clear();
+        foreach (var cmd in item.Model.Commands)
+        {
+            lstCommands.Items.Add(cmd);
+        }
+        
         txtIcon.Text = item.Model.Icon ?? "";
         chkBold.IsChecked = item.Model.Bold;
         chkIsMenu.IsChecked = item.Model.IsMenu;
@@ -536,7 +586,34 @@ public partial class MainWindow : Window
         
         UpdateColorPreviewPanels();
         
-        statusText.Text = $"Editing: {item.Name}";
+        // Update status text with item type
+        string itemType = isRootMenu ? "Main Menu" : (isSubmenu ? "Submenu" : "Shortcut");
+        statusText.Text = $"Editing {itemType}: {item.Name}";
+    }
+    
+    private void ClearPropertyPanel()
+    {
+        // Clear all input fields
+        txtName.Text = "";
+        txtIcon.Text = "";
+        txtTextColor.Text = "";
+        txtBgColor.Text = "";
+        chkBold.IsChecked = false;
+        chkIsMenu.IsChecked = false;
+        lstCommands.Items.Clear();
+        
+        // Hide all panels
+        pnlCommands.Visibility = Visibility.Collapsed;
+        var iconGrid = (Grid)txtIcon.Parent;
+        iconGrid.Visibility = Visibility.Collapsed;
+        chkBold.Visibility = Visibility.Collapsed;
+        chkIsMenu.Visibility = Visibility.Collapsed;
+        
+        // Clear color previews
+        UpdateColorPreviewPanels();
+        
+        // Update status
+        statusText.Text = "Select an item to edit";
     }
     
     private void SaveItem_Click(object sender, RoutedEventArgs e)
@@ -547,18 +624,23 @@ public partial class MainWindow : Window
         {
             // Update model from UI
             _selectedItem.Model.Name = txtName.Text;
-            _selectedItem.Model.Commands = txtCommands.Text
-                .Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries)
-                .ToList();
-            _selectedItem.Model.Icon = string.IsNullOrWhiteSpace(txtIcon.Text) ? null : txtIcon.Text;
-            _selectedItem.Model.Bold = chkBold.IsChecked ?? false;
-            _selectedItem.Model.IsMenu = chkIsMenu.IsChecked ?? false;
             
-            // If user checks IsMenu, ensure Children list exists
-            if (_selectedItem.Model.IsMenu && _selectedItem.Model.Children == null)
+            // Only update commands for shortcuts (not for root menu or submenus)
+            if (!_selectedItem.IsRootMenu && !_selectedItem.Model.IsMenu)
             {
-                _selectedItem.Model.Children = new List<QuickCliq.Core.Models.MenuItem>();
+                // Get commands from ListBox
+                _selectedItem.Model.Commands = lstCommands.Items.Cast<string>().ToList();
             }
+            
+            // Only update icon for non-root items
+            if (!_selectedItem.IsRootMenu)
+            {
+                _selectedItem.Model.Icon = string.IsNullOrWhiteSpace(txtIcon.Text) ? null : txtIcon.Text;
+                _selectedItem.Model.Bold = chkBold.IsChecked ?? false;
+            }
+            
+            // IsMenu is determined by structure, not user input
+            // (Root menu and submenus already have IsMenu = true)
             
             // Parse colors - use -1 for "default/not set", allowing 0 for black
             _selectedItem.Model.TextColor = -1;
@@ -586,6 +668,76 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             System.Windows.MessageBox.Show($"Error updating item:\n\n{ex.Message}", AppConstants.AppName, MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+    
+    private void AddCommand_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new CommandBuilderDialog
+        {
+            Owner = this
+        };
+        
+        if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.CommandText))
+        {
+            lstCommands.Items.Add(dialog.CommandText);
+        }
+    }
+    
+    private void EditCommand_Click(object sender, RoutedEventArgs e)
+    {
+        if (lstCommands.SelectedIndex < 0) return;
+        
+        string existingCommand = lstCommands.SelectedItem as string ?? "";
+        var dialog = new CommandBuilderDialog(existingCommand)
+        {
+            Owner = this
+        };
+        
+        if (dialog.ShowDialog() == true && !string.IsNullOrWhiteSpace(dialog.CommandText))
+        {
+            int index = lstCommands.SelectedIndex;
+            lstCommands.Items[index] = dialog.CommandText;
+        }
+    }
+    
+    private void DeleteCommand_Click(object sender, RoutedEventArgs e)
+    {
+        if (lstCommands.SelectedIndex >= 0)
+        {
+            lstCommands.Items.RemoveAt(lstCommands.SelectedIndex);
+        }
+    }
+    
+    private void MoveCommandUp_Click(object sender, RoutedEventArgs e)
+    {
+        int index = lstCommands.SelectedIndex;
+        if (index > 0)
+        {
+            var item = lstCommands.Items[index];
+            lstCommands.Items.RemoveAt(index);
+            lstCommands.Items.Insert(index - 1, item);
+            lstCommands.SelectedIndex = index - 1;
+        }
+    }
+    
+    private void MoveCommandDown_Click(object sender, RoutedEventArgs e)
+    {
+        int index = lstCommands.SelectedIndex;
+        if (index >= 0 && index < lstCommands.Items.Count - 1)
+        {
+            var item = lstCommands.Items[index];
+            lstCommands.Items.RemoveAt(index);
+            lstCommands.Items.Insert(index + 1, item);
+            lstCommands.SelectedIndex = index + 1;
+        }
+    }
+    
+    private void lstCommands_DoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (lstCommands.SelectedIndex >= 0)
+        {
+            EditCommand_Click(sender, e);
         }
     }
     

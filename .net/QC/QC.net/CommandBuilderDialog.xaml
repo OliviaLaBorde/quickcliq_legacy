@@ -1,0 +1,292 @@
+<Window x:Class="QC.net.CommandBuilderDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="Command Builder" 
+        Width="700"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{materialDesign:MaterialDesignFont}">
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <!-- Command Type Selector -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="COMMAND TYPE" 
+                       Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Margin="0,0,0,8"/>
+            <ComboBox Name="cmbCommandType" 
+                      SelectionChanged="CommandType_Changed"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}">
+                <ComboBoxItem Content="Run Program / File" Tag="program"/>
+                <ComboBoxItem Content="Open URL" Tag="url"/>
+                <ComboBoxItem Content="Open Folder" Tag="openfolder"/>
+                <ComboBoxItem Content="Special Command" Tag="special"/>
+                <ComboBoxItem Content="Change Working Directory" Tag="changedir"/>
+                <ComboBoxItem Content="Copy To" Tag="copyto"/>
+            </ComboBox>
+        </StackPanel>
+        
+        <!-- Program/File Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlProgram" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="PROGRAM / FILE" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="txtProgramPath" 
+                             materialDesign:HintAssist.Hint="Program or file path"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             TextChanged="Input_Changed"/>
+                    <Button Grid.Column="1" 
+                            Content="Browse" 
+                            Click="BrowseProgram_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="8,0,0,0"
+                            Width="100"/>
+                </Grid>
+                
+                <TextBox Name="txtArguments" 
+                         materialDesign:HintAssist.Hint="Arguments (optional)"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         TextChanged="Input_Changed"
+                         Margin="0,0,0,12"/>
+                
+                <CheckBox Name="chkRunAsAdmin" 
+                          Content="Run as Administrator"
+                          Margin="0,0,0,12"
+                          Checked="Input_Changed"
+                          Unchecked="Input_Changed"/>
+                
+                <ComboBox Name="cmbWindowStyle" 
+                          materialDesign:HintAssist.Hint="Window Style"
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          SelectionChanged="Input_Changed"
+                          SelectedIndex="0">
+                    <ComboBoxItem Content="Normal" Tag="normal"/>
+                    <ComboBoxItem Content="Minimized" Tag="minimized"/>
+                    <ComboBoxItem Content="Maximized" Tag="maximized"/>
+                </ComboBox>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- URL Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlUrl" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="URL" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                <TextBox Name="txtUrl" 
+                         materialDesign:HintAssist.Hint="https://example.com"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         TextChanged="Input_Changed"/>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Open Folder Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlOpenFolder" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="OPEN FOLDER" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="txtFolderPath" 
+                             materialDesign:HintAssist.Hint="Folder path"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             TextChanged="Input_Changed"/>
+                    <Button Grid.Column="1" 
+                            Content="Browse" 
+                            Click="BrowseFolder_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="8,0,0,0"
+                            Width="100"/>
+                </Grid>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Special Command Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlSpecial" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="SPECIAL COMMAND" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                <ComboBox Name="cmbSpecialCommand" 
+                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                          SelectionChanged="Input_Changed">
+                    <ComboBoxItem Content="Open Menu Editor" Tag="EDITOR"/>
+                    <ComboBoxItem Content="Cascade Windows" Tag="win_casc"/>
+                    <ComboBoxItem Content="Task Switcher" Tag="win_tasksw"/>
+                    <ComboBoxItem Content="Tile Windows Horizontally" Tag="win_tileh"/>
+                    <ComboBoxItem Content="Tile Windows Vertically" Tag="win_tilev"/>
+                    <ComboBoxItem Content="Minimize All Windows" Tag="win_min"/>
+                    <ComboBoxItem Content="Restore All Windows" Tag="win_unmin"/>
+                    <ComboBoxItem Content="Toggle Desktop" Tag="win_togd"/>
+                    <ComboBoxItem Content="Kill Process" Tag="killproc"/>
+                    <ComboBoxItem Content="Wait 1 second" Tag="WAIT1"/>
+                    <ComboBoxItem Content="Wait 2 seconds" Tag="WAIT2"/>
+                    <ComboBoxItem Content="Wait 5 seconds" Tag="WAIT5"/>
+                </ComboBox>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Change Directory Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlChangeDir" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="CHANGE WORKING DIRECTORY" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="txtChangeDir" 
+                             materialDesign:HintAssist.Hint="Directory path"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             TextChanged="Input_Changed"/>
+                    <Button Grid.Column="1" 
+                            Content="Browse" 
+                            Click="BrowseChangeDir_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="8,0,0,0"
+                            Width="100"/>
+                </Grid>
+                <TextBlock Text="Changes the working directory for subsequent commands"
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,8,0,0"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Copy To Panel -->
+        <materialDesign:Card Grid.Row="1" Name="pnlCopyTo" Visibility="Collapsed" Margin="0,0,0,16" Padding="16">
+            <StackPanel>
+                <TextBlock Text="COPY TO" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,12"/>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Name="txtCopyDest" 
+                             materialDesign:HintAssist.Hint="Destination path"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             TextChanged="Input_Changed"/>
+                    <Button Grid.Column="1" 
+                            Content="Browse" 
+                            Click="BrowseCopyDest_Click"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Margin="8,0,0,0"
+                            Width="100"/>
+                </Grid>
+                <CheckBox Name="chkMove" 
+                          Content="Move instead of copy"
+                          Margin="0,0,0,8"
+                          Checked="Input_Changed"
+                          Unchecked="Input_Changed"/>
+                <CheckBox Name="chkOverwrite" 
+                          Content="Overwrite existing files"
+                          Checked="Input_Changed"
+                          Unchecked="Input_Changed"/>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Help Section -->
+        <Expander Grid.Row="2" 
+                  Header="ENVIRONMENT VARIABLES &amp; TIPS"
+                  Margin="0,0,0,16"
+                  Style="{StaticResource MaterialDesignExpander}">
+            <materialDesign:Card Padding="16">
+                <ScrollViewer MaxHeight="200" VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+                            <Run FontWeight="SemiBold">Environment Variables:</Run>
+                            <LineBreak/>
+                            %WINDIR% - Windows directory
+                            <LineBreak/>
+                            %TEMP% - Temporary files directory
+                            <LineBreak/>
+                            %USERPROFILE% - User profile directory
+                            <LineBreak/>
+                            %PROGRAMFILES% - Program Files directory
+                            <LineBreak/>
+                            %APPDATA% - Application Data directory
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap" Margin="0,0,0,8">
+                            <Run FontWeight="SemiBold">Clipboard Variables (future):</Run>
+                            <LineBreak/>
+                            {clip} - Current clipboard content
+                            <LineBreak/>
+                            {clip1} through {clip9} - Named clipboard slots
+                        </TextBlock>
+                        <TextBlock TextWrapping="Wrap">
+                            <Run FontWeight="SemiBold">Tips:</Run>
+                            <LineBreak/>
+                            • Use quotes around paths with spaces
+                            <LineBreak/>
+                            • Multiple commands execute in order
+                            <LineBreak/>
+                            • Add WAIT commands for delays between commands
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </materialDesign:Card>
+        </Expander>
+        
+        <!-- Command Preview -->
+        <materialDesign:Card Grid.Row="3" Padding="16" Margin="0,0,0,20">
+            <StackPanel>
+                <TextBlock Text="COMMAND PREVIEW" 
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                           Margin="0,0,0,8"/>
+                <TextBox Name="txtPreview" 
+                         IsReadOnly="True"
+                         TextWrapping="Wrap"
+                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         FontFamily="Consolas"
+                         Foreground="{DynamicResource MaterialDesignBodyLight}"/>
+            </StackPanel>
+        </materialDesign:Card>
+        
+        <!-- Buttons -->
+        <StackPanel Grid.Row="4" 
+                    Orientation="Horizontal" 
+                    HorizontalAlignment="Right">
+            <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                    Width="120" 
+                    Height="40"
+                    IsDefault="True" 
+                    Click="OK_Click" 
+                    Margin="0,0,12,0">
+                <TextBlock Text="OK" FontSize="14" FontWeight="SemiBold"/>
+            </Button>
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Width="120"
+                    Height="40"
+                    IsCancel="True" 
+                    Click="Cancel_Click">
+                <TextBlock Text="Cancel" FontSize="14"/>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

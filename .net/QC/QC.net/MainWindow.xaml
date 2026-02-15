@@ -125,6 +125,12 @@
                           SelectedItemChanged="MenuTreeView_SelectedItemChanged"
                           AllowDrop="True"
                           Padding="8">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                            <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
                     <TreeView.Resources>
                         <HierarchicalDataTemplate DataType="{x:Type local:MenuItemViewModel}" 
                                                 ItemsSource="{Binding Children}">
@@ -154,18 +160,82 @@
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Margin="0,0,16,16"/>
                         
-                        <!-- Commands -->
-                        <TextBox Name="txtCommands" 
-                                 materialDesign:HintAssist.Hint="Commands (one per line)"
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                 AcceptsReturn="True" 
-                                 TextWrapping="Wrap" 
-                                 MinHeight="140"
-                                 MaxHeight="100"
-                                 VerticalScrollBarVisibility="Auto"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 Margin="0,0,16,16"/>
+                        <!-- Commands List -->
+                        <StackPanel Name="pnlCommands" Visibility="Visible">
+                            <Grid Margin="0,0,16,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBlock Text="COMMANDS" 
+                                           Grid.Column="0"
+                                           Style="{StaticResource MaterialDesignCaptionTextBlock}"/>
+                                
+                                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                    <Button Name="btnAddCommand"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="32" Height="32"
+                                            Click="AddCommand_Click"
+                                            ToolTip="Add command">
+                                        <materialDesign:PackIcon Kind="Plus" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Name="btnEditCommand"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="32" Height="32"
+                                            Margin="4,0,0,0"
+                                            Click="EditCommand_Click"
+                                            ToolTip="Edit command">
+                                        <materialDesign:PackIcon Kind="Pencil" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Name="btnDeleteCommand"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="32" Height="32"
+                                            Margin="4,0,0,0"
+                                            Click="DeleteCommand_Click"
+                                            ToolTip="Delete command">
+                                        <materialDesign:PackIcon Kind="Delete" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Name="btnMoveCommandUp"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="32" Height="32"
+                                            Margin="8,0,0,0"
+                                            Click="MoveCommandUp_Click"
+                                            ToolTip="Move up">
+                                        <materialDesign:PackIcon Kind="ArrowUp" Width="20" Height="20"/>
+                                    </Button>
+                                    <Button Name="btnMoveCommandDown"
+                                            Style="{StaticResource MaterialDesignIconButton}"
+                                            Width="32" Height="32"
+                                            Margin="4,0,0,0"
+                                            Click="MoveCommandDown_Click"
+                                            ToolTip="Move down">
+                                        <materialDesign:PackIcon Kind="ArrowDown" Width="20" Height="20"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            
+                            <ListBox Name="lstCommands"
+                                     MinHeight="120"
+                                     MaxHeight="200"
+                                     Margin="0,0,16,16"
+                                     SelectionMode="Single"
+                                     MouseDoubleClick="lstCommands_DoubleClick">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Console" 
+                                                                     Width="16" Height="16" 
+                                                                     Margin="0,0,8,0"
+                                                                     VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding}" 
+                                                       TextTrimming="CharacterEllipsis"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </StackPanel>
                         
                         <!-- Icon -->
                         <Grid Margin="0,0,0,16">

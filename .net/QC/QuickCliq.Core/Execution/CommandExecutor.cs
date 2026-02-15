@@ -39,16 +39,32 @@ public partial class CommandExecutor : ICommandExecutor
         bool ctrlPressed = !parameters.NoCtrl && IsKeyPressed(Keys.Control);
         bool shiftPressed = !parameters.NoShift && IsKeyPressed(Keys.Shift);
 
-        // If Ctrl pressed, copy commands to clipboard and return
-        if (ctrlPressed)
+        // Get commands list - either from Commands property (preferred) or split from Command string (legacy)
+        List<string> commands;
+        
+        if (parameters.Commands != null && parameters.Commands.Count > 0)
         {
-            CopyCommandsToClipboard(parameters.Command);
+            // Modern format - use the list directly
+            commands = parameters.Commands;
+        }
+        else if (!string.IsNullOrEmpty(parameters.Command))
+        {
+            // Legacy format - split by {N} divider
+            commands = SplitCommands(parameters.Command);
+        }
+        else
+        {
+            // No commands to execute
             return;
         }
 
-        // Split by multi-target divider
-        var commands = SplitCommands(parameters.Command);
-        
+        // If Ctrl pressed, copy commands to clipboard and return
+        if (ctrlPressed)
+        {
+            CopyCommandsToClipboard(string.Join(AppConstants.MultiTargetDivider, commands));
+            return;
+        }
+
         if (commands.Count == 0)
             return;
 

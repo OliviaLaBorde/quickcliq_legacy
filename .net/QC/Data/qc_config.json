@@ -101,23 +101,25 @@
         "children": [
           {
             "id": 4,
-            "name": "\uD83C\uDF10 Browser",
+            "name": "\uD83C\uDF10 multi command test",
             "icon": null,
             "hotkey": "",
             "bold": false,
             "isSeparator": false,
             "isMenu": false,
             "autorun": false,
-            "textColor": -1,
+            "textColor": 0,
             "bgColor": -1,
             "commands": [
-              "https://google.com"
+              "www.google.com",
+              "notepad.exe",
+              "C:\\dev"
             ],
             "children": []
           },
           {
             "id": 5,
-            "name": "\uD83D\uDCC1 Windows Explorer",
+            "name": "\uD83D\uDCC1 Windows Explorer multi",
             "icon": "explorer.exe",
             "hotkey": "",
             "bold": false,
@@ -127,7 +129,8 @@
             "textColor": -1,
             "bgColor": -1,
             "commands": [
-              "explorer.exe"
+              "RUN_MAX explorer.exe",
+              "RUN_MAX notepad.exe"
             ],
             "children": []
           }
