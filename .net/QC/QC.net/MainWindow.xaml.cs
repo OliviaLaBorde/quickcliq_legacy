@@ -557,6 +557,9 @@ public partial class MainWindow : Window
         // Commands - only for shortcuts
         pnlCommands.Visibility = isShortcut ? Visibility.Visible : Visibility.Collapsed;
         
+        // Font - only for root menu (Main Menu)
+        pnlFont.Visibility = isRootMenu ? Visibility.Visible : Visibility.Collapsed;
+        
         // Icon - for shortcuts and submenus, but not root menu
         var iconGrid = (Grid)txtIcon.Parent; // Get the Grid containing icon controls
         iconGrid.Visibility = isRootMenu ? Visibility.Collapsed : Visibility.Visible;
@@ -569,6 +572,14 @@ public partial class MainWindow : Window
         
         // Load values
         txtName.Text = item.Name;
+        
+        // Load font for Main Menu
+        if (isRootMenu)
+        {
+            var menu = _configService.GetMenu();
+            txtFont.Text = menu.Font ?? "Segoe UI"; // Default to Segoe UI if not set
+            txtFontSize.Text = (menu.FontSize ?? 10).ToString(); // Default to 10 if not set
+        }
         
         // Load commands into ListBox
         lstCommands.Items.Clear();
@@ -598,12 +609,15 @@ public partial class MainWindow : Window
         txtIcon.Text = "";
         txtTextColor.Text = "";
         txtBgColor.Text = "";
+        txtFont.Text = "";
+        txtFontSize.Text = "10";
         chkBold.IsChecked = false;
         chkIsMenu.IsChecked = false;
         lstCommands.Items.Clear();
         
         // Hide all panels
         pnlCommands.Visibility = Visibility.Collapsed;
+        pnlFont.Visibility = Visibility.Collapsed;
         var iconGrid = (Grid)txtIcon.Parent;
         iconGrid.Visibility = Visibility.Collapsed;
         chkBold.Visibility = Visibility.Collapsed;
@@ -660,10 +674,32 @@ public partial class MainWindow : Window
                     _selectedItem.Model.BgColor = bc;
             }
             
+            // Update font for root menu (Main Menu)
+            if (_selectedItem.IsRootMenu)
+            {
+                var menu = _configService.GetMenu();
+                menu.Font = string.IsNullOrWhiteSpace(txtFont.Text) ? null : txtFont.Text;
+                
+                // Parse font size
+                if (int.TryParse(txtFontSize.Text, out int fontSize) && fontSize >= 8 && fontSize <= 72)
+                {
+                    menu.FontSize = fontSize;
+                }
+                else
+                {
+                    menu.FontSize = 10; // Default
+                }
+                
+                _configService.SetMenu(menu);
+            }
+            
             // Refresh display
             _selectedItem.RaisePropertyChanged();
             
-            statusText.Text = $"✓ Updated '{_selectedItem.Name}'";
+            // Auto-save and rebuild menu
+            Save_Click(sender, e);
+            
+            statusText.Text = $"✓ Updated '{_selectedItem.Name}' and rebuilt menu";
         }
         catch (Exception ex)
         {
@@ -783,6 +819,47 @@ public partial class MainWindow : Window
         {
             txtBgColor.Text = $"0x{dialog.SelectedColor.R:X2}{dialog.SelectedColor.G:X2}{dialog.SelectedColor.B:X2}";
             UpdateColorPreviewPanels();
+        }
+    }
+    
+    private void FontPicker_Click(object sender, RoutedEventArgs e)
+    {
+        var fontDialog = new System.Windows.Forms.FontDialog
+        {
+            ShowColor = false,
+            ShowEffects = false,
+            AllowVectorFonts = true,
+            AllowVerticalFonts = false,
+            FontMustExist = true,
+            MinSize = 8,
+            MaxSize = 72
+        };
+        
+        // Set current font and size if one is selected
+        if (!string.IsNullOrWhiteSpace(txtFont.Text))
+        {
+            try
+            {
+                // Parse current font size from txtFontSize
+                float currentSize = 10;
+                if (float.TryParse(txtFontSize.Text, out float parsedSize))
+                {
+                    currentSize = parsedSize;
+                }
+                
+                fontDialog.Font = new System.Drawing.Font(txtFont.Text, currentSize);
+            }
+            catch
+            {
+                // If font can't be created, just use default
+                fontDialog.Font = new System.Drawing.Font("Segoe UI", 10);
+            }
+        }
+        
+        if (fontDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            txtFont.Text = fontDialog.Font.Name;
+            txtFontSize.Text = ((int)fontDialog.Font.Size).ToString(); // Save font size as well
         }
     }
     

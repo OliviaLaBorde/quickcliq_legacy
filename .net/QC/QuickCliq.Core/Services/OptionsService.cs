@@ -81,6 +81,16 @@ public class OptionsService : IOptionsService, INotifyPropertyChanged
             _config.DelOpt(key);
         }
     }
+    
+    /// <summary>
+    /// Clear the cache to force reload from config
+    /// Call this after config changes to ensure fresh values are read
+    /// </summary>
+    public void ClearCache()
+    {
+        _cache.Clear();
+        OnPropertyChanged(string.Empty); // Notify all properties changed
+    }
 
     private T ConvertValue<T>(object value)
     {
@@ -138,6 +148,7 @@ public class OptionsService : IOptionsService, INotifyPropertyChanged
             ["aprns_transp"] = 255,
             ["aprns_tform"] = 0,
             ["aprns_mainfont"] = "",
+            ["aprns_fontsize"] = 10,
             ["aprns_fontqlty"] = 5,
             ["aprns_framewidth"] = 1,
             ["aprns_frameselmode"] = false,

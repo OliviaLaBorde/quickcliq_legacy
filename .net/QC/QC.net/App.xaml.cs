@@ -399,6 +399,10 @@ public partial class App : System.Windows.Application
                 _editorWindow.MenuSaved += (s, e) =>
                 {
                     Console.WriteLine("Menu saved - rebuilding menus...");
+                    
+                    // Clear options cache to pick up new font/settings
+                    _optionsService?.ClearCache();
+                    
                     _menuBuilder?.RebuildAll();
                     Console.WriteLine("Menu rebuilt successfully");
                 };

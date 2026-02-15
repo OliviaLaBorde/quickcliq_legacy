@@ -11,4 +11,5 @@ public interface IOptionsService
     bool Exists(string name);
     void Reset(string name); // Reset to default
     void ResetAll();
+    void ClearCache(); // Clear cache to force reload from config
 }

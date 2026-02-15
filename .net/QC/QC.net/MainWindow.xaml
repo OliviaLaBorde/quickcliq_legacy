@@ -160,6 +160,40 @@
                                  Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                  Margin="0,0,16,16"/>
                         
+                        <!-- Font (Main Menu only) -->
+                        <StackPanel Name="pnlFont" Visibility="Collapsed" Margin="0,0,16,16">
+                            <TextBlock Text="FONT" 
+                                       Style="{StaticResource MaterialDesignCaptionTextBlock}" 
+                                       Margin="0,0,0,8"/>
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <TextBox Name="txtFont"
+                                         Grid.Column="0"
+                                         materialDesign:HintAssist.Hint="Font name"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         IsReadOnly="True"/>
+                                
+                                <Button Grid.Column="1" 
+                                        Name="btnFontPicker"
+                                        Style="{StaticResource MaterialDesignIconButton}"
+                                        Width="40" Height="40"
+                                        Margin="8,0,0,0"
+                                        Click="FontPicker_Click"
+                                        ToolTip="Choose Font">
+                                    <materialDesign:PackIcon Kind="FormatFont" Width="24" Height="24"/>
+                                </Button>
+                            </Grid>
+                            
+                            <TextBox Name="txtFontSize"
+                                     materialDesign:HintAssist.Hint="Font size (10-24)"
+                                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                     Text="10"/>
+                        </StackPanel>
+                        
                         <!-- Commands List -->
                         <StackPanel Name="pnlCommands" Visibility="Visible">
                             <Grid Margin="0,0,16,8">

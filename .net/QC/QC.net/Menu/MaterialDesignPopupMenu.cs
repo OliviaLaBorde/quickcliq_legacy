@@ -231,6 +231,16 @@ public class MaterialDesignPopupMenu : IPopupMenu
             StaysOpen = false // Allow clicking outside to close
         };
         
+        // Apply font if specified
+        if (!string.IsNullOrEmpty(_params.FontName))
+        {
+            menu.FontFamily = new System.Windows.Media.FontFamily(_params.FontName);
+        }
+        if (_params.FontSize > 0)
+        {
+            menu.FontSize = _params.FontSize;
+        }
+        
         // Apply menu-level colors if specified and NOT the default values
         // 0x000000 = black text (default for Win32, but we want Material Design default for WPF)
         // 0xf1f1f1 = light grey bg (default for Win32, but we want Material Design default for WPF)

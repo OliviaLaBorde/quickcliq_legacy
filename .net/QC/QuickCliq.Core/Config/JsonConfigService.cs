@@ -26,6 +26,30 @@ public class JsonConfigService : IConfigService
         };
         
         _config = LoadOrCreate();
+        
+        // Sync menu font to aprns_mainfont setting if menu font is set
+        if (!string.IsNullOrEmpty(_config.Menu.Font))
+        {
+            _config.Settings["aprns_mainfont"] = _config.Menu.Font;
+        }
+        // Otherwise, sync from aprns_mainfont to menu font
+        else if (_config.Settings.TryGetValue("aprns_mainfont", out var fontValue) && fontValue is string fontStr)
+        {
+            _config.Menu.Font = fontStr;
+        }
+        
+        // Sync font size - no default in settings, use 10 if not set
+        if (_config.Menu.FontSize.HasValue)
+        {
+            _config.Settings["aprns_fontsize"] = _config.Menu.FontSize.Value;
+        }
+        else if (_config.Settings.TryGetValue("aprns_fontsize", out var sizeValue))
+        {
+            if (sizeValue is int fontSize)
+                _config.Menu.FontSize = fontSize;
+            else if (int.TryParse(sizeValue?.ToString(), out int parsedSize))
+                _config.Menu.FontSize = parsedSize;
+        }
     }
 
     private QuickCliqConfig LoadOrCreate()
@@ -70,6 +94,18 @@ public class JsonConfigService : IConfigService
 
     public void Save()
     {
+        // Sync menu font to aprns_mainfont setting before saving
+        if (!string.IsNullOrEmpty(_config.Menu.Font))
+        {
+            _config.Settings["aprns_mainfont"] = _config.Menu.Font;
+        }
+        
+        // Sync menu font size to aprns_fontsize setting before saving
+        if (_config.Menu.FontSize.HasValue)
+        {
+            _config.Settings["aprns_fontsize"] = _config.Menu.FontSize.Value;
+        }
+        
         var json = JsonSerializer.Serialize(_config, _jsonOptions);
         File.WriteAllText(_configPath, json);
     }

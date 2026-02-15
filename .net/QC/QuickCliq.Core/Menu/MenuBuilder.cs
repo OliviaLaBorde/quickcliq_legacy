@@ -281,6 +281,7 @@ public class MenuBuilder : IMenuBuilder
             NoText = _options.Get<bool>("aprns_iconsonly") && !_options.Get<bool>("aprns_lightmenu"),
             YMargin = 3 + _options.Get<int>("aprns_heightadjust"),
             FontName = _options.Get<string>("aprns_mainfont"),
+            FontSize = _options.Get<int>("aprns_fontsize"),
             FontQuality = _options.Get<int>("aprns_fontqlty"),
             FrameWidth = _options.Get<int>("aprns_framewidth"),
             FrameSelMode = _options.Get<bool>("aprns_frameselmode")

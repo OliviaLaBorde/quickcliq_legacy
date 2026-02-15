@@ -41,6 +41,12 @@ public class MenuConfig
     [JsonPropertyName("bgColor")]
     public int BgColor { get; set; }
     
+    [JsonPropertyName("font")]
+    public string? Font { get; set; }
+    
+    [JsonPropertyName("fontSize")]
+    public int? FontSize { get; set; }
+    
     [JsonPropertyName("items")]
     public List<MenuItem> Items { get; set; } = new();
 }

@@ -5,7 +5,9 @@
     "id": 0,
     "name": "main",
     "textColor": -1,
-    "bgColor": 7929856,
+    "bgColor": -1,
+    "font": "Segoe UI",
+    "fontSize": 16,
     "items": [
       {
         "id": 12,
@@ -45,7 +47,7 @@
                 "textColor": -1,
                 "bgColor": -1,
                 "commands": [
-                  "notepad.exe"
+                  "RUN_MAX notepad.exe"
                 ],
                 "children": []
               },
@@ -61,8 +63,7 @@
                 "textColor": -1,
                 "bgColor": -1,
                 "commands": [
-                  "calc.exe,",
-                  "notepad.exe"
+                  "RUN_MAX calc.exe"
                 ],
                 "children": []
               },
@@ -96,7 +97,7 @@
         "isMenu": true,
         "autorun": false,
         "textColor": -1,
-        "bgColor": 15204572,
+        "bgColor": -1,
         "commands": [],
         "children": [
           {
@@ -108,7 +109,7 @@
             "isSeparator": false,
             "isMenu": false,
             "autorun": false,
-            "textColor": 0,
+            "textColor": -1,
             "bgColor": -1,
             "commands": [
               "www.google.com",
@@ -146,6 +147,7 @@
     "aprns_iconsonly": false,
     "aprns_heightadjust": 0,
     "aprns_mainfont": "Segoe UI",
+    "aprns_fontsize": 16,
     "aprns_fontqlty": 5,
     "aprns_framewidth": 1,
     "aprns_frameselmode": false,
