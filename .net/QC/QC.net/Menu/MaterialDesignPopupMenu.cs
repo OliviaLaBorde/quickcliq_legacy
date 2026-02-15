@@ -5,8 +5,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Windows.Input;
+using MaterialDesignThemes.Wpf;
 using QuickCliq.Core.Menu;
 using QuickCliq.Core.Models;
+using QuickCliq.Core.Services;
 
 namespace QC.net.Menu;
 
@@ -16,6 +18,7 @@ namespace QC.net.Menu;
 public class MaterialDesignPopupMenu : IPopupMenu
 {
     private readonly Window _parentWindow;
+    private readonly IconResolver _iconResolver;
     private readonly List<MenuItemData> _items = new();
     private MenuParams _params = new();
     private System.Windows.Controls.ContextMenu? _contextMenu;
@@ -25,6 +28,7 @@ public class MaterialDesignPopupMenu : IPopupMenu
     public MaterialDesignPopupMenu(Window parentWindow)
     {
         _parentWindow = parentWindow;
+        _iconResolver = new IconResolver();
     }
     
     public void Add(MenuItemParams item)
@@ -294,20 +298,57 @@ public class MaterialDesignPopupMenu : IPopupMenu
             Margin = new Thickness(0)
         };
         
-        // Icon
+        // Icon - handle multiple types
         if (!string.IsNullOrEmpty(data.Params?.Icon as string))
         {
+            var iconString = data.Params.Icon as string;
+            var iconData = _iconResolver.Resolve(iconString);
+            
             try
             {
-                var iconPath = data.Params.Icon as string;
-                var image = new System.Windows.Controls.Image
+                switch (iconData.Type)
                 {
-                    Width = _params.IconSize,
-                    Height = _params.IconSize,
-                    Margin = new Thickness(0, 0, 8, 0),
-                    Source = new BitmapImage(new Uri(iconPath, UriKind.Absolute))
-                };
-                stackPanel.Children.Add(image);
+                    case IconType.Material:
+                        // Parse Material Design icon name
+                        if (Enum.TryParse<PackIconKind>(iconData.Value, out var iconKind))
+                        {
+                            var packIcon = new PackIcon
+                            {
+                                Kind = iconKind,
+                                Width = _params.IconSize,
+                                Height = _params.IconSize,
+                                Margin = new Thickness(0, 0, 8, 0),
+                                VerticalAlignment = VerticalAlignment.Center
+                            };
+                            stackPanel.Children.Add(packIcon);
+                        }
+                        break;
+                        
+                    case IconType.Emoji:
+                        // Create TextBlock with emoji
+                        var emojiBlock = new TextBlock
+                        {
+                            Text = iconData.Value,
+                            FontSize = _params.IconSize > 0 ? _params.IconSize : 16,
+                            Margin = new Thickness(0, 0, 8, 0),
+                            VerticalAlignment = VerticalAlignment.Center,
+                            TextAlignment = TextAlignment.Center
+                        };
+                        stackPanel.Children.Add(emojiBlock);
+                        break;
+                        
+                    case IconType.File:
+                        // Existing file-based icon loading
+                        var image = new System.Windows.Controls.Image
+                        {
+                            Width = _params.IconSize,
+                            Height = _params.IconSize,
+                            Margin = new Thickness(0, 0, 8, 0),
+                            Source = new BitmapImage(new Uri(iconData.Value, UriKind.Absolute))
+                        };
+                        stackPanel.Children.Add(image);
+                        break;
+                }
             }
             catch
             {

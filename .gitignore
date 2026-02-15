@@ -105,7 +105,6 @@ coverage*/
 *.coveragexml
 
 ############################################
-# Azure / CI (optional)
+# stuff
 ############################################
-# Uncomment if you generate local secrets or dev-only files
-# **/secrets.json
+# cursor/

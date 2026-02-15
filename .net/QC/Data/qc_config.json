@@ -37,8 +37,8 @@
             "children": [
               {
                 "id": 1,
-                "name": "\uD83D\uDDD2\uFE0F Notepad",
-                "icon": "notepad.exe",
+                "name": "Notepad",
+                "icon": "material:FileAlert",
                 "hotkey": "",
                 "bold": false,
                 "isSeparator": false,
@@ -53,8 +53,8 @@
               },
               {
                 "id": 2,
-                "name": "\uD83E\uDDEE Calculator",
-                "icon": "calc.exe",
+                "name": "Calculator",
+                "icon": "material:Calculator",
                 "hotkey": "",
                 "bold": false,
                 "isSeparator": false,
@@ -70,7 +70,7 @@
               {
                 "id": 13,
                 "name": "bleh",
-                "icon": null,
+                "icon": "emoji:\u2694\uFE0F",
                 "hotkey": "",
                 "bold": false,
                 "isSeparator": false,

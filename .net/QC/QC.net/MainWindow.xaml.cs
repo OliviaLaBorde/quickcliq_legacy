@@ -5,8 +5,11 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using MaterialDesignThemes.Wpf;
 using QuickCliq.Core;
 using QuickCliq.Core.Config;
+using QuickCliq.Core.Services;
+using QuickCliq.Core.Models;
 
 namespace QC.net;
 
@@ -16,6 +19,7 @@ namespace QC.net;
 public partial class MainWindow : Window
 {
     private readonly IConfigService _configService;
+    private readonly IconResolver _iconResolver;
     private ObservableCollection<MenuItemViewModel> _menuItems;
     private MenuItemViewModel? _selectedItem;
     
@@ -32,6 +36,7 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
         _configService = configService;
+        _iconResolver = new IconResolver();
         _menuItems = new ObservableCollection<MenuItemViewModel>();
         
         LoadMenuFromConfig();
@@ -596,6 +601,7 @@ public partial class MainWindow : Window
         txtBgColor.Text = item.Model.BgColor >= 0 ? $"0x{item.Model.BgColor:X6}" : "";
         
         UpdateColorPreviewPanels();
+        UpdateIconPreview(item.Model.Icon);
         
         // Update status text with item type
         string itemType = isRootMenu ? "Main Menu" : (isSubmenu ? "Submenu" : "Shortcut");
@@ -614,6 +620,7 @@ public partial class MainWindow : Window
         chkBold.IsChecked = false;
         chkIsMenu.IsChecked = false;
         lstCommands.Items.Clear();
+        iconPreviewContent.Content = null;
         
         // Hide all panels
         pnlCommands.Visibility = Visibility.Collapsed;
@@ -779,16 +786,80 @@ public partial class MainWindow : Window
     
     private void BrowseIcon_Click(object sender, RoutedEventArgs e)
     {
-        // Simple file picker for now
-        var dialog = new Microsoft.Win32.OpenFileDialog
+        var dialog = new IconPickerDialog(txtIcon.Text)
         {
-            Title = "Select Icon File",
-            Filter = "Executable files (*.exe)|*.exe|Icon files (*.ico)|*.ico|DLL files (*.dll)|*.dll|All files (*.*)|*.*"
+            Owner = this
         };
         
         if (dialog.ShowDialog() == true)
         {
-            txtIcon.Text = dialog.FileName;
+            txtIcon.Text = dialog.SelectedIcon;
+            UpdateIconPreview(dialog.SelectedIcon);
+        }
+    }
+    
+    private void IconText_Changed(object sender, TextChangedEventArgs e)
+    {
+        UpdateIconPreview(txtIcon.Text);
+    }
+    
+    private void UpdateIconPreview(string? iconString)
+    {
+        iconPreviewContent.Content = null;
+        
+        if (string.IsNullOrWhiteSpace(iconString))
+            return;
+        
+        var iconData = _iconResolver.Resolve(iconString);
+        
+        try
+        {
+            switch (iconData.Type)
+            {
+                case IconType.Material:
+                    if (Enum.TryParse<PackIconKind>(iconData.Value, out var iconKind))
+                    {
+                        iconPreviewContent.Content = new PackIcon
+                        {
+                            Kind = iconKind,
+                            Width = 24,
+                            Height = 24
+                        };
+                    }
+                    break;
+                    
+                case IconType.Emoji:
+                    iconPreviewContent.Content = new TextBlock
+                    {
+                        Text = iconData.Value,
+                        FontSize = 24,
+                        TextAlignment = TextAlignment.Center,
+                        VerticalAlignment = VerticalAlignment.Center
+                    };
+                    break;
+                    
+                case IconType.File:
+                    var image = new System.Windows.Controls.Image
+                    {
+                        Width = 24,
+                        Height = 24,
+                        Source = new System.Windows.Media.Imaging.BitmapImage(
+                            new Uri(iconData.Value, UriKind.Absolute))
+                    };
+                    iconPreviewContent.Content = image;
+                    break;
+            }
+        }
+        catch
+        {
+            // If icon can't be loaded, show broken icon
+            iconPreviewContent.Content = new PackIcon
+            {
+                Kind = PackIconKind.ImageBroken,
+                Width = 24,
+                Height = 24,
+                Opacity = 0.3
+            };
         }
     }
     

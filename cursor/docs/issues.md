@@ -16,7 +16,10 @@
 
 - [x] when a bg color is set on the main menu the submenus that don't have a bg color set stay the material theme grey. How can we get it to set all submenus the mainmenu color when the submenu bg color isn't set? hmmmmmmm **!!DONE!!**
 
-- [ ] better icon support - not just from exe resources - can we use the material icons?? can we parse built in windows icons without having to manualy navigate to them? what about text emojis? what about web icon libraries like fontawesome? Let's flesh this out!
+- [x] better icon support - not just from exe resources - can we use the material icons?? can we parse built in windows icons without having to manualy navigate to them? what about text emojis? what about web icon libraries like fontawesome? Let's flesh this out!
+  - DONE: Implemented Material Design icons and emoji support with tabbed IconPickerDialog
+  - Icon format: `material:IconName`, `emoji:😀`, or `file:path` (backward compatible)
+  - Live preview in editor, all icon types render in menus
 
 - [x] when the editor window opens it shows the last item edited property controls even though the item in the treeview is not selected. The property panel should either default to the mainmenu item or show nothing at all until an item in the treeview is selected. **!!DONE!!**
 
