@@ -34,6 +34,7 @@
 - **Better stability** with managed code and exception handling
 - **Maintainability** with clean architecture and strong typing
 - **Future-proof** with .NET's long-term support
+- **Plug-in support** fully extendable via plug-ins with menu integrations!!
 
 ---
 
