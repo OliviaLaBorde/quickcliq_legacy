@@ -19,7 +19,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        </Grid.RowDefinitions> 
         
         <!-- Toolbar -->
         <materialDesign:ColorZone Grid.Row="0" Mode="Dark" Padding="16,8">
