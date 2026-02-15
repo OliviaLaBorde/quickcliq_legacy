@@ -44,8 +44,8 @@
 |-------|------|--------|------------|
 | **Phase 1** | Foundation | ✅ Complete | 100% |
 | **Phase 2** | Core Functionality | ✅ Complete | 100% |
-| **Phase 3** | Editor & UI | ✅ Complete | 100% |
-| **Phase 4** | Plugin System & Advanced Features | 🔄 Next Up | 0% |
+| **Phase 3** | Editor & UI | 🔄 Current being worked | 80% |
+| **Phase 4** | Plugin System & Advanced Features | 📋 Next Up | 0% |
 | **Phase 5** | Polish & Distribution | 📋 Planned | 0% |
 
 **Overall Progress**: 60% (3 of 5 phases complete)
