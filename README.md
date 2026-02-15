@@ -134,10 +134,6 @@ quickcliq_legacy/
 │       └── qc_config.json           # Configuration file
 ├── ahk_legacy_src/                  # Original AutoHotkey source
 │   └── Quick Cliq.ahk               # Legacy codebase
-└── cursor/docs/                     # Project documentation
-    ├── ROADMAP.md                   # Development roadmap
-    ├── PHASE_*_TASKS.md             # Phase specifications
-    └── ICON_SUPPORT_IMPLEMENTATION.md
 ```
 
 ### Key Services
